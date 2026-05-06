@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ใบขอซื้อ / Purchase Request</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f5f5f0; color: #1a1a1a; min-height: 100vh; padding: 2rem 1rem; }
+    .container { max-width: 900px; margin: 0 auto; }
+
+    .pr-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; }
+    .pr-title { font-size: 22px; font-weight: 600; color: #1a1a1a; }
+    .pr-subtitle { font-size: 13px; color: #666; margin-top: 4px; }
+    .pr-badge { background: #E1F5EE; color: #0F6E56; font-size: 12px; padding: 5px 14px; border-radius: 20px; font-weight: 500; display: flex; align-items: center; gap: 5px; }
+
+    .status-row { display: flex; gap: 6px; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .step { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #888; }
+    .step-dot { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; background: #f0efe9; border: 1px solid #ddd; color: #888; }
+    .step-dot.active { background: #E6F1FB; color: #185FA5; border-color: #B5D4F4; }
+    .step-line { width: 32px; height: 1px; background: #ddd; }
+
+    .section-card { background: #fff; border: 1px solid #e5e5e0; border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1rem; }
+    .section-label { font-size: 11px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 1rem; display: flex; align-items: center; gap: 6px; }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field.full { grid-column: 1 / -1; }
+    label { font-size: 13px; color: #555; }
+    input, select, textarea {
+      font-family: inherit; font-size: 14px; color: #1a1a1a;
+      background: #fafaf8; border: 1px solid #ddd; border-radius: 8px;
+      padding: 8px 10px; width: 100%; outline: none; transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    input:focus, select:focus, textarea:focus { border-color: #378ADD; box-shadow: 0 0 0 3px rgba(55,138,221,0.1); }
+    input[readonly] { color: #888; cursor: default; }
+    textarea { resize: vertical; min-height: 70px; }
+
+    .table-wrap { overflow-x: auto; margin-top: 0.5rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 680px; }
+    th { text-align: left; padding: 9px 10px; font-size: 11px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.04em; border-bottom: 1px solid #eee; background: #fafaf8; }
+    td { padding: 6px 6px; border-bottom: 1px solid #f0f0ec; vertical-align: middle; }
+    td input, td select { padding: 6px 8px; font-size: 13px; background: #fff; }
+    .td-no { width: 36px; text-align: center; color: #aaa; font-size: 13px; }
+    .td-total { font-weight: 600; color: #1a1a1a; text-align: right; padding-right: 12px; min-width: 90px; }
+    .td-del { width: 36px; text-align: center; }
+    .btn-del { background: none; border: none; color: #E24B4A; cursor: pointer; padding: 5px; border-radius: 6px; font-size: 16px; display: flex; align-items: center; justify-content: center; transition: background 0.1s; }
+    .btn-del:hover { background: #FCEBEB; }
+
+    .add-row-btn { margin-top: 10px; background: none; border: 1px dashed #ccc; border-radius: 8px; padding: 8px 16px; font-size: 13px; color: #888; cursor: pointer; display: flex; align-items: center; gap: 6px; width: 100%; justify-content: center; transition: all 0.12s; font-family: inherit; }
+    .add-row-btn:hover { background: #fafaf8; color: #333; border-color: #aaa; }
+
+    .summary-row { display: flex; justify-content: flex-end; margin-top: 14px; }
+    .summary-box { background: #fafaf8; border: 1px solid #eee; border-radius: 10px; padding: 12px 24px; text-align: right; }
+    .summary-label { font-size: 12px; color: #888; }
+    .summary-value { font-size: 22px; font-weight: 700; color: #1a1a1a; margin-top: 2px; }
+
+    .sig-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+    .sig-box { border: 1px solid #e5e5e0; border-radius: 10px; padding: 14px; text-align: center; min-height: 90px; display: flex; flex-direction: column; justify-content: space-between; }
+    .sig-role { font-size: 12px; color: #888; margin-bottom: 10px; }
+    .sig-line { border-top: 1px solid #e5e5e0; padding-top: 8px; font-size: 12px; color: #aaa; line-height: 1.8; }
+
+    .footer-btns { display: flex; justify-content: flex-end; gap: 8px; margin-top: 1rem; }
+    .btn { padding: 9px 22px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; border: 1px solid #ddd; transition: all 0.12s; font-family: inherit; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-outline { background: transparent; color: #333; }
+    .btn-outline:hover { background: #f5f5f0; }
+    .btn-primary { background: #185FA5; color: #fff; border-color: #185FA5; }
+    .btn-primary:hover { background: #0C447C; }
+    .btn-submit { background: #0F6E56; color: #fff; border-color: #0F6E56; }
+    .btn-submit:hover { background: #085041; }
+
+    @media (max-width: 600px) {
+      .form-grid, .form-grid-3, .sig-grid { grid-template-columns: 1fr; }
+      .field.full { grid-column: 1; }
+      .pr-header { flex-direction: column; gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="pr-header">
+    <div>
+      <div class="pr-title">ใบขอซื้อ / Purchase Request</div>
+      <div class="pr-subtitle">กรอกข้อมูลให้ครบถ้วนก่อนส่งอนุมัติ</div>
+    </div>
+    <span class="pr-badge"><i class="ti ti-clock"></i> รอดำเนินการ</span>
+  </div>
+
+  <div class="status-row">
+    <div class="step"><div class="step-dot active">1</div><span>สร้าง PR</span></div>
+    <div class="step-line"></div>
+    <div class="step"><div class="step-dot">2</div><span>ผู้จัดการอนุมัติ</span></div>
+    <div class="step-line"></div>
+    <div class="step"><div class="step-dot">3</div><span>จัดซื้ออนุมัติ</span></div>
+    <div class="step-line"></div>
+    <div class="step"><div class="step-dot">4</div><span>ออก PO</span></div>
+    <div class="step-line"></div>
+    <div class="step"><div class="step-dot">5</div><span>เสร็จสิ้น</span></div>
+  </div>
+
+  <!-- ข้อมูลทั่วไป -->
+  <div class="section-card">
+    <div class="section-label"><i class="ti ti-file-description"></i> ข้อมูลทั่วไป</div>
+    <div class="form-grid">
+      <div class="field">
+        <label>เลขที่ใบขอซื้อ</label>
+        <input type="text" id="pr-no" value="PR-2026-0001" readonly />
+      </div>
+      <div class="field">
+        <label>วันที่ขอซื้อ</label>
+        <input type="date" id="request-date" />
+      </div>
+      <div class="field">
+        <label>ผู้ขอซื้อ</label>
+        <input type="text" placeholder="ชื่อ-นามสกุล" />
+      </div>
+      <div class="field">
+        <label>แผนก / ฝ่าย</label>
+        <select>
+          <option value="">-- เลือกแผนก --</option>
+          <option>ฝ่ายปฏิบัติการ</option>
+          <option>ฝ่ายการตลาด</option>
+          <option>ฝ่ายไอที</option>
+          <option>ฝ่ายบัญชี</option>
+          <option>ฝ่ายบุคคล</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>วันที่ต้องการ</label>
+        <input type="date" />
+      </div>
+      <div class="field">
+        <label>ประเภทการจัดซื้อ</label>
+        <select>
+          <option>ซื้อทั่วไป</option>
+          <option>บริการ / จ้างเหมา</option>
+          <option>วัสดุสิ้นเปลือง</option>
+          <option>ครุภัณฑ์</option>
+        </select>
+      </div>
+      <div class="field full">
+        <label>วัตถุประสงค์ / เหตุผลในการขอซื้อ</label>
+        <textarea placeholder="ระบุเหตุผลและความจำเป็นในการจัดซื้อ..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- รายการสินค้า -->
+  <div class="section-card">
+    <div class="section-label"><i class="ti ti-list-details"></i> รายการสินค้า / บริการ</div>
+    <div class="table-wrap">
+      <table id="items-table">
+        <thead>
+          <tr>
+            <th class="td-no">#</th>
+            <th style="width:28%">รายการ</th>
+            <th style="width:22%">รายละเอียด</th>
+            <th style="width:9%; text-align:center;">จำนวน</th>
+            <th style="width:10%">หน่วย</th>
+            <th style="width:12%">ราคา/หน่วย</th>
+            <th style="width:12%; text-align:right; padding-right:12px;">รวม (บาท)</th>
+            <th class="td-del"></th>
+          </tr>
+        </thead>
+        <tbody id="items-body"></tbody>
+      </table>
+    </div>
+    <button class="add-row-btn" onclick="addRow()">
+      <i class="ti ti-plus"></i> เพิ่มรายการ
+    </button>
+    <div class="summary-row">
+      <div class="summary-box">
+        <div class="summary-label">ยอดรวมทั้งสิ้น</div>
+        <div class="summary-value" id="grand-total">฿0.00</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ลายมือชื่อ -->
+  <div class="section-card">
+    <div class="section-label"><i class="ti ti-writing"></i> ลายมือชื่อ</div>
+    <div class="sig-grid">
+      <div class="sig-box">
+        <div class="sig-role">ผู้ขอซื้อ / Requester</div>
+        <div class="sig-line">ลงชื่อ .........................<br>วันที่ .........................</div>
+      </div>
+      <div class="sig-box">
+        <div class="sig-role">ผู้จัดการ / Manager</div>
+        <div class="sig-line">ลงชื่อ .........................<br>วันที่ .........................</div>
+      </div>
+      <div class="sig-box">
+        <div class="sig-role">ฝ่ายจัดซื้อ / Purchasing</div>
+        <div class="sig-line">ลงชื่อ .........................<br>วันที่ .........................</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-btns">
+    <button class="btn btn-outline"><i class="ti ti-device-floppy"></i> บันทึกร่าง</button>
+    <button class="btn btn-submit"><i class="ti ti-send"></i> ส่งอนุมัติ</button>
+  </div>
+
+</div>
+
+<script>
+  // ตั้งวันที่วันนี้
+  document.getElementById('request-date').value = new Date().toISOString().split('T')[0];
+
+  let rowCount = 0;
+
+  function addRow() {
+    rowCount++;
+    const tbody = document.getElementById('items-body');
+    const tr = document.createElement('tr');
+    tr.id = 'row-' + rowCount;
+    const id = rowCount;
+    tr.innerHTML = `
+      <td class="td-no">${id}</td>
+      <td><input type="text" placeholder="ชื่อสินค้า" /></td>
+      <td><input type="text" placeholder="รายละเอียด" /></td>
+      <td><input type="number" min="1" value="1" step="1" style="text-align:center;" oninput="calcRow(${id})" /></td>
+      <td>
+        <select onchange="calcRow(${id})">
+          <option>ชิ้น</option><option>กล่อง</option><option>ชุด</option>
+          <option>แพ็ค</option><option>ม้วน</option><option>ลิตร</option>
+          <option>กิโลกรัม</option><option>เดือน</option><option>ครั้ง</option>
+        </select>
+      </td>
+      <td><input type="number" min="0" value="0" step="0.01" placeholder="0.00" oninput="calcRow(${id})" /></td>
+      <td class="td-total" id="total-${id}" style="text-align:right; padding-right:12px; font-weight:600;">0.00</td>
+      <td class="td-del"><button class="btn-del" onclick="delRow(${id})" title="ลบแถว"><i class="ti ti-trash"></i></button></td>
+    `;
+    tbody.appendChild(tr);
+    calcGrand();
+  }
+
+  function calcRow(id) {
+    const row = document.getElementById('row-' + id);
+    if (!row) return;
+    const inputs = row.querySelectorAll('input[type="number"]');
+    const qty = parseFloat(inputs[0].value) || 0;
+    const price = parseFloat(inputs[1].value) || 0;
+    document.getElementById('total-' + id).textContent = (qty * price).toFixed(2);
+    calcGrand();
+  }
+
+  function delRow(id) {
+    const row = document.getElementById('row-' + id);
+    if (row) row.remove();
+    calcGrand();
+  }
+
+  function calcGrand() {
+    let sum = 0;
+    document.querySelectorAll('[id^="total-"]').forEach(el => {
+      sum += parseFloat(el.textContent) || 0;
+    });
+    document.getElementById('grand-total').textContent =
+      '฿' + sum.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  addRow();
+  addRow();
+</script>
+</body>
+</html>
